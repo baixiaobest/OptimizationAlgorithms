@@ -13,20 +13,25 @@ class GradientDescend:
         self.alpha = alpha
         self.beta = beta
         self.sigma = sigma
-        self.iter = 0
+        self.info = {
+            'iter': 0,
+            'grad': []
+        }
 
     def minimize(self, f, f_grad):
         x = self.x_init
         gradient = f_grad(x)
-        self.iter = 0
+        self.info['iter'] = 0
+        self.info['grad'] = []
         while norm(gradient) > self.sigma:
+            self.info['grad'].append(norm(gradient))
             delta_x = -gradient
             t = backtracking_line_search(x, delta_x, f, f_grad, self.alpha, self.beta)
             x = x + t * delta_x
             gradient = f_grad(x)
-            self.iter += 1
+            self.info['iter'] += 1
 
         return x
 
-    def print_status(self):
-        print(f"Iterations: {self.iter}")
+    def print_info(self):
+        print(self.info)
