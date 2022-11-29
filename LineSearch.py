@@ -1,4 +1,4 @@
-def line_search(x, delta_x, f, f_grad, alpha, beta):
+def backtracking_line_search(x, delta_x, f, f_grad, alpha, beta):
     f_x = f(x)
     f_grad_x = f_grad(x)
     t = 1.0

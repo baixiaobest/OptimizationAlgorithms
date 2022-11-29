@@ -22,3 +22,6 @@ def get_auto_gradient(f):
         return auto_gradient(f, x)
 
     return auto_grad
+
+def booth_function(x):
+    return (x[0] + 2*x[1] - 7)**2 + (2*x[0] + x[1] - 5)**2
