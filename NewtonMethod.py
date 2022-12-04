@@ -9,7 +9,8 @@ class NewtonMethod:
         self.sigma_sq = sigma**2
         self.info = {
             'iter': 0,
-            'lambda': []
+            'lambda_sq': [],
+            'x': []
         }
 
     def minimize(self, f, f_grad, f_hess):
@@ -17,19 +18,25 @@ class NewtonMethod:
         grad = f_grad(x)
         H = f_hess(x)
         delta_x = solve(H, -grad)
-        lambda_val = -delta_x@grad
+        lambda_sq_val = -delta_x@grad
+        self.info['lambda_sq'] = [lambda_sq_val]
+        self.info['x'] = [x]
 
-        while lambda_val > self.sigma_sq:
+        while lambda_sq_val > self.sigma_sq:
             grad = f_grad(x)
             delta_x = solve(H, -grad)
             t = backtracking_line_search(x, delta_x, f, f_grad, self.alpha, self.beta)
             x = x + t*delta_x
             delta_x = solve(H, -grad)
             self.info['iter'] += 1
-            self.info['lambda'].append(lambda_val)
-            lambda_val = -delta_x@grad
+            self.info['lambda_sq'].append(lambda_sq_val)
+            self.info['x'].append(x)
+            lambda_sq_val = -delta_x@grad
 
         return x
 
     def print_info(self):
         print(self.info)
+
+    def get_info(self):
+        return self.info
