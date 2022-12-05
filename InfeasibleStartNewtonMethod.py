@@ -1,4 +1,4 @@
-from scipy.linalg import solve, ldl, solve_triangular, solve_banded, norm
+from scipy.linalg import solve, solve_triangular, norm, cholesky
 import numpy as np
 
 class InfeasibleStartNewtonMethod:
@@ -95,22 +95,21 @@ class InfeasibleStartNewtonMethod:
     '''
     def _solve_KKT(self, H, A, g, h):
         Ag = np.concatenate((A.T, np.array([g]).T), axis=1)
-        L, D, _ = ldl(H)
-        H_inv_Ag = self._solve_LDL(L, D, Ag)
+        L = cholesky(H, lower=True)
+        H_inv_Ag = self._solve_cholesky(L, Ag)
         H_inv_A = H_inv_Ag[:, 0:-1]
         H_inv_g = H_inv_Ag[:, -1]
 
         S = -A@H_inv_A
         w = solve(S, A@H_inv_g - h, assume_a='sym')
-        v = self._solve_LDL(L, D, -A.T @ w - g)
+        v = self._solve_cholesky(L, -A.T @ w - g)
 
         return v, w
 
     '''
-    Solve the equation of the form: LDL^T x = b
+    Solve the equation of the form: LL^T x = b
     '''
-    def _solve_LDL(self, L, D, b):
+    def _solve_cholesky(self, L, b):
         x = solve_triangular(L, b, lower=True)
-        y = solve_banded((0, 0), np.array([D.diagonal()]), x)
-        z = solve_triangular(L.T, y, lower=False)
-        return z
+        y = solve_triangular(L.T, x, lower=False)
+        return y

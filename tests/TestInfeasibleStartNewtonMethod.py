@@ -5,11 +5,11 @@ import numpy as np
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        A = np.array([[-1, 1, 3],
+        A = np.array([[1, 1, 3],
                       [3, 1, 1]])
         H = np.array([[2, 1, 0],
-                      [1, 5, 6],
-                      [0, 6, 1]])
+                      [1, 5, 2],
+                      [0, 2, 1]])
         g = np.array([1, 5, 3])
         h = np.array([3, 9])
 
