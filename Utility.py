@@ -47,3 +47,11 @@ def get_auto_hessian(f, delta=1e-2):
 
 def booth_function(x):
     return (x[0] + 2*x[1] - 7)**2 + (2*x[0] + x[1] - 5)**2
+
+def banana_function(x, a, b):
+    return (a - x[0])**2 + b*(x[1] - x[0]**2)**2
+
+def get_banana_function(a=1, b=5):
+    def banana(x):
+        return banana_function(x, a, b)
+    return banana
