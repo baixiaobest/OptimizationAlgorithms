@@ -12,8 +12,8 @@ class MyTestCase(unittest.TestCase):
 
     def test_gradient_descent(self):
         x_init = np.zeros(2)
-        method = gd(x_init, alpha=0.5, beta=0.1, sigma=1e-5)
-        x_opt = method.minimize(booth_function, get_auto_gradient(booth_function))
+        method = gd(alpha=0.5, beta=0.1, sigma=1e-5)
+        x_opt = method.minimize(booth_function, get_auto_gradient(booth_function), x_init)
         method.print_info()
         self.assertAlmostEqual(x_opt[0], 1, 5)
         self.assertAlmostEqual(x_opt[1], 3, 5)

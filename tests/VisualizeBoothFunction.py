@@ -2,44 +2,33 @@ from matplotlib import pyplot as plt
 from Utility import get_auto_hessian, get_auto_gradient, booth_function
 from NewtonMethod import NewtonMethod as nm
 from GradientDescent import GradientDescend as gd
+from tests.common import draw_contour
 import numpy as np
-
-def draw_function(func):
-    ''' Draw the contour of booth function '''
-    x_list = np.linspace(-3, 5, 50)
-    y_list = np.linspace(-3, 5, 50)
-    X, Y = np.meshgrid(x_list, y_list)
-    Z = np.zeros(X.shape)
-    for row in range(X.shape[0]):
-        for col in range(X.shape[1]):
-            Z[row, col] = func([X[row, col], Y[row, col]])
-
-    fig, ax = plt.subplots(1, 1)
-    ax.contour(X, Y, Z, levels=30)
-
-    return fig, ax
 
 def run_newton(func, x_init):
     ''' Run newton method '''
-    method = nm(x_init, alpha=0.5, beta=0.1, sigma=1e-5)
+    method = nm(alpha=0.5, beta=0.1, sigma=1e-5)
     x_opt = method.minimize(
-        booth_function,
+        func,
         get_auto_gradient(func),
-        get_auto_hessian(func))
+        get_auto_hessian(func),
+        x_init)
 
     info = method.get_info()
 
     return info
 
 def run_gradient_descent(func, x_init):
-    method = gd(x_init, alpha=0.5, beta=0.1, sigma=1e-5)
-    x_opt = method.minimize(booth_function, get_auto_gradient(func))
+    method = gd(alpha=0.5, beta=0.1, sigma=1e-5)
+    x_opt = method.minimize(func, get_auto_gradient(func), x_init)
 
     return method.info
 
 if __name__=="__main__":
     x_init = np.array([3, 0])
-    fig, ax = draw_function(booth_function)
+
+    fig, ax = plt.subplots(1, 1)
+    draw_contour(booth_function, ax, [-3, 5], [-3, 5])
     newton_info = run_newton(booth_function, x_init)
     gradient_info = run_gradient_descent(booth_function, x_init)
 

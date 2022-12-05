@@ -8,8 +8,8 @@ class GradientDescend:
     beta: Used in backtracking line search, multiple of step size.
     sigma: Termination condition on gradient magnitude.
     '''
-    def __init__(self, x_init, alpha, beta, sigma):
-        self.x_init = x_init
+    def __init__(self, alpha, beta, sigma):
+        self.x_init = None
         self.alpha = alpha
         self.beta = beta
         self.sigma = sigma
@@ -19,7 +19,8 @@ class GradientDescend:
             'x': []
         }
 
-    def minimize(self, f, f_grad):
+    def minimize(self, f, f_grad, x_init):
+        self.x_init = x_init.astype('float64')
         x = self.x_init
         gradient = f_grad(x)
         self.info['iter'] = 0
