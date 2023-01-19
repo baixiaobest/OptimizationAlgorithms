@@ -2,6 +2,13 @@ from scipy.linalg import solve, solve_triangular, norm, cholesky
 import numpy as np
 
 class InfeasibleStartNewtonMethod:
+    '''
+    alpha: Line search alpha.
+    beta: Line search step multiplier beta.
+    sigma: Tolerance for norm of primal residual and tolerance for norm of residuals.
+        Use for program termination.
+    max_iter: Maximum iteration.
+    '''
     def __init__(self, alpha, beta, sigma, max_iter=100):
         self.alpha = alpha
         self.beta = beta
