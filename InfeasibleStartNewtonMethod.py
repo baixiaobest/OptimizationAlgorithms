@@ -83,6 +83,8 @@ class InfeasibleStartNewtonMethod:
     def _residual_norm(self, x, v):
         r_dual, r_pri = self._residual(x, v)
         vec = np.concatenate((r_dual, r_pri), axis=0)
+        if np.isinf(vec).any():
+            return np.inf
         return norm(vec)
 
     def _residual(self, x, v):

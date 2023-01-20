@@ -53,6 +53,11 @@ class BarrierMethod:
             log_barrier_grad = np.zeros(n)
             for i in range(m):
                 fi = f_ineq[i]
+                # x is out of domain of -log(-fi(x)).
+                if fi(x) >= 0:
+                    # Signal the infeasible start newton method
+                    # that the dual residual is infinite.
+                    return np.ones(n) * np.inf
                 fi_grad = f_ineq_grad[i]
                 log_barrier_grad += -1/fi(x) * fi_grad(x)
 
