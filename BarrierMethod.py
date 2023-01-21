@@ -24,6 +24,13 @@ class BarrierMethod:
         self.sigma = sigma
         self.center_sigma = center_sigma
 
+    def minimize(self, f, f_grad, f_hess, f_ineq_list, f_ineq_grad_list, f_ineq_hess_list, x_init, A, b):
+        x, s, _, _ = self.solve_feasibility(f_ineq_list, f_ineq_grad_list, f_ineq_hess_list, x_init, A, b)
+        if s > 0:
+            print("Problem is infeasible")
+            return None, None, None
+        return self.run_barrier_method(f, f_grad, f_hess, f_ineq_list, f_ineq_grad_list, f_ineq_hess_list, x, A, b)
+
     '''
     t value can be chosen such that it minimizes:
         inf_v || t * ∇f(x_init) + ∇log_barrier(x_init) + A.T@v ||2
@@ -72,6 +79,10 @@ class BarrierMethod:
 
         m = len(f_ineq_list)
         x_init = x_init.astype('float64')
+
+        for fi in f_ineq_list:
+            if fi(x_init) > 0:
+                raise ValueError("x_init needs to be feasible in inequality constraints.")
 
         def get_log_barrier_grad(f_ineq_list, f_ineq_grad_list):
             def func(x):

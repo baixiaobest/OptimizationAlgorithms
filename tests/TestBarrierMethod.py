@@ -12,7 +12,13 @@ class MyTestCase(unittest.TestCase):
             return a@x - b
         return func
 
-    def test_linear_program(self):
+    def test_linear_program_feasible_x_init(self):
+        self.linear_program_with_x_init(np.array([1, 1]))
+
+    def test_linear_program_infeasible_x_init(self):
+        self.linear_program_with_x_init(np.array([100, 100]), run_barrier_only=False)
+
+    def linear_program_with_x_init(self, x_init, run_barrier_only=True):
         def obj1(x):
             return np.array([-1, 2]) @ x
 
@@ -37,8 +43,6 @@ class MyTestCase(unittest.TestCase):
             fi_ineq_hess.append(get_auto_hessian(fi))
         bm = BM.BarrierMethod(alpha=0.5, beta=0.1, sigma=1e-5, center_sigma=1e-5)
 
-        x_init = np.array([1, 1])
-
         def run_barrier_method_with_objective(obj):
             x = bm.run_barrier_method(
                 obj,
@@ -52,9 +56,27 @@ class MyTestCase(unittest.TestCase):
                 b=None)
             return x
 
-        x1, λ1, v1 = run_barrier_method_with_objective(obj1)
-        x2, λ2, v2 = run_barrier_method_with_objective(obj2)
-        x3, λ2, v2 = run_barrier_method_with_objective(obj3)
+        def run_minimize_with_objective(obj):
+            x = bm.minimize(
+                obj,
+                get_auto_gradient(obj),
+                obj_hess,
+                fi_ineq,
+                fi_ineq_grad,
+                fi_ineq_hess,
+                x_init,
+                A=None,
+                b=None)
+            return x
+
+        if run_barrier_only:
+            x1, λ1, v1 = run_barrier_method_with_objective(obj1)
+            x2, λ2, v2 = run_barrier_method_with_objective(obj2)
+            x3, λ2, v2 = run_barrier_method_with_objective(obj3)
+        else:
+            x1, λ1, v1 = run_minimize_with_objective(obj1)
+            x2, λ2, v2 = run_minimize_with_objective(obj2)
+            x3, λ2, v2 = run_minimize_with_objective(obj3)
 
         self.assertTrue(np.allclose(x1, np.array([0, -2]), atol=1e-3))
         self.assertTrue(np.allclose(x2, np.array([18/5, 2/5]), atol=1e-3))
@@ -183,13 +205,12 @@ class MyTestCase(unittest.TestCase):
         feasible = True
         s_max_sol = 0
         for fi in fi_ineq:
-            if(fi(x) > 0):
+            if fi(x) > 0:
                 feasible = False
             s_max_sol = max(s_max_sol, fi(x))
 
         self.assertFalse(feasible)
         print(f"s_max_sol: {s_max_sol}")
-
 
 if __name__ == '__main__':
     unittest.main()
