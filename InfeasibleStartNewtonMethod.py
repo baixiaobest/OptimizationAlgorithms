@@ -21,7 +21,8 @@ class InfeasibleStartNewtonMethod:
         self.info = {
             'iter': 0,
             'residual_norm': [],
-            'x': []
+            'x': [],
+            'v': []  # dual variable
         }
 
     '''
@@ -48,6 +49,7 @@ class InfeasibleStartNewtonMethod:
 
         self.info['residual_norm'].append(norm(r))
         self.info['x'].append(x)
+        self.info['v'].append(v)
 
         num_iter = 0
         while (r_pri > self.sigma or norm(r) > self.sigma) and num_iter < self.max_iter:
@@ -65,7 +67,7 @@ class InfeasibleStartNewtonMethod:
 
             num_iter += 1
 
-        return x
+        return x, v
 
     def get_info(self):
         return self.info

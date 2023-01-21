@@ -52,9 +52,9 @@ class MyTestCase(unittest.TestCase):
                 b=None)
             return x
 
-        x1 = run_barrier_method_with_objective(obj1)
-        x2 = run_barrier_method_with_objective(obj2)
-        x3 = run_barrier_method_with_objective(obj3)
+        x1, λ1, v1 = run_barrier_method_with_objective(obj1)
+        x2, λ2, v2 = run_barrier_method_with_objective(obj2)
+        x3, λ2, v2 = run_barrier_method_with_objective(obj3)
 
         self.assertTrue(np.allclose(x1, np.array([0, -2]), atol=1e-3))
         self.assertTrue(np.allclose(x2, np.array([18/5, 2/5]), atol=1e-3))
@@ -104,9 +104,9 @@ class MyTestCase(unittest.TestCase):
                 b=b)
             return x
 
-        x1 = run_barrier_method_with_objective(obj1)
-        x2 = run_barrier_method_with_objective(obj2)
-        x3 = run_barrier_method_with_objective(obj3)
+        x1, λ1, v1 = run_barrier_method_with_objective(obj1)
+        x2, λ2, v2 = run_barrier_method_with_objective(obj2)
+        x3, λ2, v2 = run_barrier_method_with_objective(obj3)
 
         self.assertTrue(np.allclose(x1, np.array([0, -2, 0]), atol=1e-3))
         self.assertTrue(np.allclose(x2, np.array([18 / 5, 2 / 5, 0]), atol=1e-3))

@@ -32,7 +32,7 @@ if __name__=="__main__":
     A = np.array([a])
     B = np.array([b])
     method = ISNM(alpha=0.5, beta=0.1, sigma=1e-5)
-    x_opt = method.minimize(
+    x_opt, v = method.minimize(
         booth_function,
         get_auto_gradient(booth_function),
         get_auto_hessian(booth_function),
