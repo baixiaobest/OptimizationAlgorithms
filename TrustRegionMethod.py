@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import norm, inv, cholesky, LinAlgError, solve
+from scipy.linalg import cho_solve
 
 class TrustRegionMethod:
     def __init__(self, sigma=1e-6, trust_region_size=10, max_trust_region_size=100, method='dogleg'):
@@ -20,6 +21,9 @@ class TrustRegionMethod:
 
     def get_info(self):
         return self.info
+
+    def print_info(self):
+        print(self.info)
 
     def minimize(self, f, f_grad, f_hess, x_init):
         x = x_init
@@ -55,15 +59,16 @@ class TrustRegionMethod:
     def _dog_leg_method(self, f, f_grad, f_hess, x, delta):
         g = f_grad(x)
         B_mat = f_hess(x)
+        L = np.identity(B_mat.shape[0])
         try:
-            cholesky(B_mat)
+            L = cholesky(B_mat)
         except LinAlgError:
             print("Hessian needs to be positive definite")
             raise
 
         p_u = -(g@g/(g@B_mat@g))*g # uncontrained minimizer along steepest descend.
         try:
-            p_B = -solve(B_mat, g)  # Newton step
+            p_B = -cho_solve((L, True), g)  # Newton step
         except LinAlgError:
             raise LinAlgError("Failed to solve for Newton step.")
 
